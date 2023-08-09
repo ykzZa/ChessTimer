@@ -15,12 +15,12 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:rotation="180"
-        android:text="00:00:00"
+        android:text="@string/zero_timer"
         android:autoSizeTextType="uniform"
         android:maxLines="1"
         android:textSize="64sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/middle_of_screen"
+        app:layout_constraintBottom_toTopOf="@id/cl_settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,7 +30,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:gravity="center"
-        android:text="00:00:00"
+        android:text="@string/zero_timer"
         android:autoSizeTextType="uniform"
         android:maxLines="1"
         android:textSize="64sp"
@@ -38,7 +38,31 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/middle_of_screen" />
+        app:layout_constraintTop_toBottomOf="@id/cl_settings" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_settings"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:layout_constraintTop_toTopOf="@id/middle_of_screen"
+        app:layout_constraintBottom_toBottomOf="@id/middle_of_screen"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_reset"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/reset_button"
+            android:src="@drawable/baseline_autorenew_24"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/middle_of_screen"
@@ -46,4 +70,23 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="409dp"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cl_settings"/>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="409dp"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_settings"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
