@@ -82,10 +82,20 @@ class MainActivity : AppCompatActivity() {
             }
             viewModel.activeTimers.observe(this@MainActivity) { isActive ->
                 updateImageButton(isActive)
+                updateSettingImageButtons(isActive)
             }
         }
     }
 
+    private fun updateSettingImageButtons(isActive: Boolean) {
+        if(!isActive) {
+            binding.ibSettingsBlack.visibility = View.VISIBLE
+            binding.ibSettingsWhite.visibility = View.VISIBLE
+        } else {
+            binding.ibSettingsBlack.visibility = View.INVISIBLE
+            binding.ibSettingsWhite.visibility = View.INVISIBLE
+        }
+    }
     private fun updateImageButton(isActive: Boolean) {
         if(isActive) {
             binding.btnPauseResume.setImageResource(R.drawable.baseline_pause)
