@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 
 interface ChessTimerRepository {
 
-    suspend fun getTimeModeById(id: Int): TimeMode
+    fun getSavedTimeMode(): LiveData<TimeMode>
+
+    suspend fun saveTimeMode(timeMode: TimeMode)
 
     suspend fun deleteTimeMode(id: Int)
 
