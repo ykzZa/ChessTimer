@@ -1,18 +1,38 @@
 package dev.ykzza.chesstimer.presentation
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
 import com.orbitalsonic.sonictimer.SonicCountDownTimer
+import dev.ykzza.chesstimer.data.ChessTimerRepositoryImpl
 import dev.ykzza.chesstimer.domain.Players
-import java.lang.RuntimeException
+import dev.ykzza.chesstimer.domain.TimeContainer
+import dev.ykzza.chesstimer.domain.TimeMode
+import dev.ykzza.chesstimer.domain.usecases.GetSavedTimeModeUseCase
+import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private var blackChessTimer: SonicCountDownTimer? = null
-    private var whiteChessTimer: SonicCountDownTimer? = null
+    private val repository = ChessTimerRepositoryImpl(application)
+    private val getSavedTimeModeUseCase = GetSavedTimeModeUseCase(repository)
+
+    private var savedTimeMode = getSavedTimeModeUseCase().asFlow()
+    private lateinit var timeMode: TimeMode
+
+    private lateinit var blackChessTimer: SonicCountDownTimer
+    private lateinit var whiteChessTimer: SonicCountDownTimer
+
+    private var blackChessTime = TimeContainer()
+    private var whiteChessTime = TimeContainer()
 
     private var moveTurn: Players? = null
+
+    private var _timeModeFormatted = MutableLiveData<String>()
+    val timeModeFormatted: LiveData<String>
+        get() = _timeModeFormatted
 
     private var _activeTimers = MutableLiveData<Boolean>()
     val activeTimers: LiveData<Boolean>
@@ -38,100 +58,196 @@ class MainViewModel: ViewModel() {
     val whiteFormattedTime: LiveData<String>
         get() = _whiteFormattedTime
 
+    private val _screenClean = MutableLiveData<Unit>()
+    val screenClean: LiveData<Unit>
+        get() = _screenClean
+
+    private val _lockBlack = MutableLiveData<Unit>()
+    val lockBlack: LiveData<Unit>
+        get() = _lockBlack
+
+    private val _lockWhite = MutableLiveData<Unit>()
+    val lockWhite: LiveData<Unit>
+        get() = _lockWhite
+
     init {
+        viewModelScope.launch {
+            savedTimeMode.collect {
+                timeMode = it
+                _timeModeFormatted.value = timeMode.toString()
+                resetTimers()
+            }
+        }
         _activeTimers.value = false
-        _whiteFormattedTime.value = formatTime(WHITE_CHESS_TIME)
-        _blackFormattedTime.value = formatTime(BLACK_CHESS_TIME)
-        resetTimers()
     }
 
-    fun resetTimers() {
+    fun timerClick(clickedBy: Players) {
+        if (_oneTimerEnded.value == false) {
+            if (_activeTimers.value == false) {
+                if (moveTurn == null) {
+                    pauseCurrentStartOpposite(clickedBy)
+                    changeMoveTurn(clickedBy)
+                    _activeTimers.value = true
+                } else {
+                    playPauseClick()
+                }
+            } else {
+                pauseCurrentStartOpposite(clickedBy)
+                addTimeToTimer(clickedBy)
+                changeMoveTurn(clickedBy)
+                _activeTimers.value = true
+            }
+        } else {
+            resetTimers()
+            _screenClean.value = Unit
+            _activeTimers.value = false
+        }
+    }
+
+    fun resetTimers(
+        whiteTime: Long = timeMode.baseTime,
+        blackTime: Long = timeMode.baseTime
+    ) {
+        _whiteFormattedTime.value = formatTime(whiteTime)
+        _blackFormattedTime.value = formatTime(blackTime)
+
+        blackChessTime.time = blackTime
+        whiteChessTime.time = whiteTime
+
         _oneTimerEnded.value = false
-        whiteChessTimer?.cancelCountDownTimer()
-        whiteChessTimer = null
-        blackChessTimer?.cancelCountDownTimer()
-        blackChessTimer = null
-        _whiteFormattedTime.value = formatTime(WHITE_CHESS_TIME)
-        _blackFormattedTime.value = formatTime(BLACK_CHESS_TIME)
-        initTimers()
+
+        pauseTimers()
+        cancelTimers()
+        initTimers(whiteTime, blackTime)
+
         _activeTimers.value = false
         moveTurn = null
     }
 
-    fun timerClick(clickedBy: Players) {
-        if(_oneTimerEnded.value == false) {
-            pauseCurrentStartOpposite(clickedBy)
-            changeMoveTurn(clickedBy)
-            _activeTimers.value = true
-        } else {
-            resetTimers()
+    fun resetTimer(time: Long, timerColor: Players) {
+        when (timerColor) {
+            Players.BLACK -> {
+                _blackFormattedTime.value = formatTime(time)
+                blackChessTime.time = time
+                blackChessTimer.cancelCountDownTimer()
+                blackChessTimer = initTimer(time, _blackFormattedTime, _blackLose, blackChessTime)
+            }
+
+            Players.WHITE -> {
+                _whiteFormattedTime.value = formatTime(time)
+                whiteChessTime.time = time
+                whiteChessTimer.cancelCountDownTimer()
+                whiteChessTimer = initTimer(time, _whiteFormattedTime, _whiteLose, whiteChessTime)
+            }
         }
     }
 
     fun playPauseClick() {
-        if(moveTurn == null) {
-            timerClick(Players.BLACK)
+        if (moveTurn == null) {
+            changeMoveTurn(Players.BLACK)
+            blackChessTimer.resumeCountDownTimer()
+            _lockWhite.value = Unit
+            _activeTimers.value = true
         } else {
-            if(_activeTimers.value == true) {
+            if (_activeTimers.value == true) {
                 pauseTimers()
                 _activeTimers.value = false
             } else {
-                when(moveTurn) {
-                    Players.BLACK -> timerClick(Players.WHITE)
-                    Players.WHITE -> timerClick(Players.BLACK)
+                _activeTimers.value = true
+                when (moveTurn) {
+                    Players.BLACK -> {
+                        _lockWhite.value = Unit
+                        whiteChessTimer.pauseCountDownTimer()
+                        blackChessTimer.resumeCountDownTimer()
+                    }
+
+                    Players.WHITE -> {
+                        _lockBlack.value = Unit
+                        blackChessTimer.pauseCountDownTimer()
+                        whiteChessTimer.resumeCountDownTimer()
+                    }
+
                     null -> throw RuntimeException()
                 }
             }
         }
     }
 
+    private fun addTimeToTimer(clickedBy: Players) {
+        when (clickedBy) {
+            Players.BLACK -> {
+                blackChessTime.time += timeMode.addTime
+                resetTimer(blackChessTime.time, clickedBy)
+            }
+
+            Players.WHITE -> {
+                whiteChessTime.time += timeMode.addTime
+                resetTimer(whiteChessTime.time, clickedBy)
+            }
+        }
+    }
+
+    private fun cancelTimers() {
+        if (this::blackChessTimer.isInitialized && this::whiteChessTimer.isInitialized) {
+            whiteChessTimer.cancelCountDownTimer()
+            blackChessTimer.cancelCountDownTimer()
+        }
+
+    }
+
     private fun pauseTimers() {
-        blackChessTimer?.pauseCountDownTimer()
-        whiteChessTimer?.pauseCountDownTimer()
+        if (this::blackChessTimer.isInitialized && this::whiteChessTimer.isInitialized) {
+            blackChessTimer.pauseCountDownTimer()
+            whiteChessTimer.pauseCountDownTimer()
+        }
     }
 
     private fun changeMoveTurn(clickedBy: Players) {
-        moveTurn = when(clickedBy) {
+        moveTurn = when (clickedBy) {
             Players.BLACK -> Players.WHITE
             Players.WHITE -> Players.BLACK
         }
     }
 
     private fun pauseCurrentStartOpposite(clickedBy: Players) {
-        when(clickedBy) {
+        when (clickedBy) {
             Players.BLACK -> {
-                whiteChessTimer?.resumeCountDownTimer()
-                blackChessTimer?.pauseCountDownTimer()
+                whiteChessTimer.resumeCountDownTimer()
+                blackChessTimer.pauseCountDownTimer()
             }
+
             Players.WHITE -> {
-                blackChessTimer?.resumeCountDownTimer()
-                whiteChessTimer?.pauseCountDownTimer()
+                blackChessTimer.resumeCountDownTimer()
+                whiteChessTimer.pauseCountDownTimer()
             }
         }
     }
-    private fun initTimers() {
-        whiteChessTimer = object : SonicCountDownTimer(WHITE_CHESS_TIME, COUNT_TIME) {
 
+    private fun initTimers(whiteTime: Long, blackTime: Long) {
+        whiteChessTimer = initTimer(whiteTime, _whiteFormattedTime, _whiteLose, whiteChessTime)
+        blackChessTimer = initTimer(blackTime, _blackFormattedTime, _blackLose, blackChessTime)
+    }
+
+    private fun initTimer(
+        time: Long,
+        formattedTime: MutableLiveData<String>,
+        timerFinished: MutableLiveData<Unit>,
+        timeHolder: TimeContainer
+    ): SonicCountDownTimer {
+        val timer = object : SonicCountDownTimer(time, COUNT_TIME) {
             override fun onTimerFinish() {
-                _whiteLose.value = Unit
                 _oneTimerEnded.value = true
+                timerFinished.value = Unit
+                _activeTimers.value = false
+                moveTurn = null
             }
 
             override fun onTimerTick(timeRemaining: Long) {
-                _whiteFormattedTime.value = formatTime(timeRemaining)
+                formattedTime.value = formatTime(timeRemaining)
+                timeHolder.time = timeRemaining
             }
         }
-        blackChessTimer = object : SonicCountDownTimer(BLACK_CHESS_TIME, COUNT_TIME) {
-
-            override fun onTimerFinish() {
-                _oneTimerEnded.value = true
-                _blackLose.value = Unit
-            }
-
-            override fun onTimerTick(timeRemaining: Long) {
-                _blackFormattedTime.value = formatTime(timeRemaining)
-            }
-        }
+        return timer
     }
 
     private fun formatTime(timeMillis: Long): String {
@@ -145,9 +261,6 @@ class MainViewModel: ViewModel() {
         private const val MILLIS_IN_SECONDS = 1000L
         private const val SECONDS_IN_MINUTES = 60
 
-        private const val BLACK_CHESS_TIME = 10000L
-        private const val WHITE_CHESS_TIME = 10000L
-
-        private const val COUNT_TIME = 10L
+        private const val COUNT_TIME = 100L
     }
 }
