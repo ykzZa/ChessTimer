@@ -2,4 +2,36 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph" />
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/timersFragment">
+    <fragment
+        android:id="@+id/timersFragment"
+        android:name="dev.ykzza.chesstimer.presentation.TimersFragment"
+        android:label="TimersFragment"
+        tools:layout="@layout/fragment_timers">
+        <action
+            android:id="@+id/action_timersFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="dev.ykzza.chesstimer.presentation.SettingsFragment"
+        android:label="Time modes"
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_addTimeModeFragment"
+            app:destination="@id/addTimeModeFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_timersFragment"
+            app:destination="@id/timersFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addTimeModeFragment"
+        android:name="dev.ykzza.chesstimer.presentation.AddTimeModeFragment"
+        android:label="fragment_add_time_mode"
+        tools:layout="@layout/fragment_add_time_mode" >
+        <action
+            android:id="@+id/action_addTimeModeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+</navigation>
