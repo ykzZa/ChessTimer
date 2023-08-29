@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+
+    <TextView
+        android:id="@+id/tv_black_timer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:autoSizeTextType="uniform"
+        android:clickable="true"
+        android:gravity="center"
+        android:maxLines="1"
+        android:rotation="180"
+        android:text="@string/zero_timer"
+        android:textSize="64sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/cl_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_white_timer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:autoSizeTextType="uniform"
+        android:clickable="true"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="@string/zero_timer"
+        android:textSize="64sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_settings"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_settings"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:layout_constraintBottom_toBottomOf="@id/middle_of_screen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/middle_of_screen">
+
+        <ImageButton
+            android:id="@+id/btn_pause_resume"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/play_or_pause_timer"
+            android:src="@drawable/ic_play"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_settings"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_settings"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/settings"
+            android:src="@drawable/ic_settings"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_reset"
+            app:layout_constraintStart_toEndOf="@id/btn_pause_resume"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_reset"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/reset_button"
+            android:src="@drawable/ic_autorenew"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_settings"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/middle_of_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="409dp"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@id/cl_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="409dp"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cl_settings" />
+
+    <ImageButton
+        android:id="@+id/ib_settings_black"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@null"
+        android:contentDescription="@string/set_time_for_black_timer"
+        android:src="@drawable/ic_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/ib_settings_white"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:background="@null"
+        android:contentDescription="@string/set_time_for_white_timer"
+        android:src="@drawable/ic_time"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/timeModeWhite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/ib_settings_white"
+        app:layout_constraintEnd_toEndOf="@+id/ib_settings_white"
+        app:layout_constraintStart_toStartOf="@+id/ib_settings_white" />
+
+    <TextView
+        android:id="@+id/timeModeBlack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rotation="180"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/ib_settings_black"
+        app:layout_constraintStart_toStartOf="@+id/ib_settings_black"
+        app:layout_constraintTop_toBottomOf="@+id/ib_settings_black" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.AddTimeModeFragment">
+
+
+    <ImageButton
+        android:id="@+id/ib_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:background="@null"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="New time mode"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ib_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ib_back"
+        app:layout_constraintTop_toTopOf="@id/ib_back" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="Time"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/et_minutes"
+        app:layout_constraintStart_toStartOf="@id/ib_back"
+        app:layout_constraintTop_toBottomOf="@id/ib_back" />
+
+
+    <EditText
+        android:id="@+id/et_minutes"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:hint="00"
+        android:inputType="number"
+        android:maxLength="2"
+        app:layout_constraintBottom_toBottomOf="@id/tv_time"
+        app:layout_constraintEnd_toStartOf="@id/tv_divide"
+        app:layout_constraintTop_toTopOf="@id/tv_time" />
+
+    <TextView
+        android:id="@+id/tv_divide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=":"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/et_minutes"
+        app:layout_constraintEnd_toStartOf="@id/et_seconds"
+        app:layout_constraintTop_toTopOf="@id/et_minutes" />
+
+    <EditText
+        android:id="@+id/et_seconds"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:hint="00"
+        android:inputType="number"
+        android:maxLength="2"
+        app:layout_constraintBottom_toBottomOf="@id/tv_divide"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_divide" />
+
+
+    <TextView
+        android:id="@+id/tv_increment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Increment time"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_add"
+        app:layout_constraintEnd_toStartOf="@id/et_minutes_increment"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@id/tv_time"
+        app:layout_constraintTop_toBottomOf="@id/tv_time"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/et_minutes_increment"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:hint="00"
+        android:inputType="number"
+        android:maxLength="2"
+        app:layout_constraintBottom_toBottomOf="@id/tv_increment"
+        app:layout_constraintEnd_toStartOf="@id/tv_divide_increment"
+        app:layout_constraintTop_toTopOf="@id/tv_increment" />
+
+    <TextView
+        android:id="@+id/tv_divide_increment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=":"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/et_minutes_increment"
+        app:layout_constraintEnd_toStartOf="@id/et_seconds_increment"
+        app:layout_constraintTop_toTopOf="@id/et_minutes_increment" />
+
+    <EditText
+        android:id="@+id/et_seconds_increment"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="center"
+        android:hint="00"
+        android:inputType="number"
+        android:maxLength="2"
+        app:layout_constraintBottom_toBottomOf="@id/tv_divide_increment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_divide_increment" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:enabled="false"
+        android:text="Add time mode"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
